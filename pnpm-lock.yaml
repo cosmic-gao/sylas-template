@@ -14,6 +14,15 @@ importers:
 
   apps/react:
     dependencies:
+      '@sylas/layout-core':
+        specifier: workspace:*
+        version: link:../../layout/core
+      '@sylas/layout-react':
+        specifier: workspace:*
+        version: link:../../layout/adapter/react
+      '@sylas/layout-vite-compiler':
+        specifier: workspace:*
+        version: link:../../layout/compiler/vite
       '@sylas/route-react':
         specifier: workspace:*
         version: link:../../route/adapter/react
@@ -49,8 +58,57 @@ importers:
         specifier: ^7.2.6
         version: 7.2.6(@types/node@22.19.1)(terser@5.44.1)
 
+  layout/adapter/react:
+    dependencies:
+      '@sylas/layout-core':
+        specifier: workspace:*
+        version: link:../../core
+      react:
+        specifier: ^19.2.1
+        version: 19.2.1
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.7
+        version: 19.2.7
+
+  layout/compiler/vite:
+    dependencies:
+      '@sylas/layout-core':
+        specifier: workspace:*
+        version: link:../../core
+      '@sylas/layout-react':
+        specifier: workspace:*
+        version: link:../../adapter/react
+      '@sylas/route-core':
+        specifier: workspace:*
+        version: link:../../../route/core
+      '@sylas/route-shared':
+        specifier: workspace:*
+        version: link:../../../route/shared
+      vite:
+        specifier: ^7.0.0
+        version: 7.2.6(@types/node@22.19.1)(terser@5.44.1)
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.19.1
+
+  layout/core:
+    dependencies:
+      '@sylas/layout-shared':
+        specifier: workspace:*
+        version: link:../shared
+
+  layout/shared: {}
+
   route/adapter/react:
     dependencies:
+      '@sylas/layout-core':
+        specifier: workspace:*
+        version: link:../../../layout/core
+      '@sylas/layout-react':
+        specifier: workspace:*
+        version: link:../../../layout/adapter/react
       '@sylas/route-core':
         specifier: workspace:*
         version: link:../../core

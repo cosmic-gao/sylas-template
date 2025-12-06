@@ -1,10 +1,5 @@
-// 方式1：使用编译器自动生成的路由（推荐）
-import { createRouter } from 'virtual:@sylas/route-routes'
-import { RouterProvider } from 'react-router-dom'
-
-function App() {
-  const { router } = createRouter()
-  return <RouterProvider router={router} />
-}
+// 使用 layout 编译器自动生成的 App 组件
+// 这个文件会被 layout 编译器的虚拟模块替换
+import App from 'virtual:@sylas/layout-app'
 
 export default App

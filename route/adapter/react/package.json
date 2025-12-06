@@ -8,6 +8,8 @@
   "types": "index.tsx",
   "dependencies": {
     "@sylas/route-core": "workspace:*",
+    "@sylas/layout-react": "workspace:*",
+    "@sylas/layout-core": "workspace:*",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "react-router-dom": "^7.10.1"

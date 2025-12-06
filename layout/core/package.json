@@ -1,0 +1,43 @@
+{
+  "name": "@sylas/layout-core",
+  "version": "0.0.0",
+  "description": "Core logic for layout system",
+  "keywords": [
+    "layout",
+    "core",
+    "layout-generation"
+  ],
+  "author": "Sylas",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "module": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    ".": {
+      "types": "./index.ts",
+      "import": "./index.ts",
+      "default": "./index.ts"
+    }
+  },
+  "files": [
+    "index.ts"
+  ],
+  "dependencies": {
+    "@sylas/layout-shared": "workspace:*"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cosmic-gao/sylas-template.git",
+    "directory": "layout/core"
+  },
+  "bugs": {
+    "url": "https://github.com/cosmic-gao/sylas-template/issues"
+  },
+  "homepage": "https://github.com/cosmic-gao/sylas-template/tree/main/layout/core#readme"
+}
+

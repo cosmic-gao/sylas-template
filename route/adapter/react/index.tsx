@@ -1,5 +1,5 @@
-import { createBrowserRouter, RouterProvider, type RouteObject } from 'react-router-dom'
-import React, { Suspense, lazy, useEffect, Component, useRef, type ComponentType } from 'react'
+import { createBrowserRouter, RouterProvider, useLocation, type RouteObject } from 'react-router-dom'
+import React, { Suspense, lazy, useEffect, useState, Component, useRef, type ComponentType } from 'react'
 import {
   generateFileRoutes,
   definePageMeta,
@@ -9,6 +9,8 @@ import {
   type RouteMeta,
   type PageMeta,
 } from '../../core/index.js'
+import { LayoutWrapper } from '@sylas/layout-react'
+import { generateLayouts, getLayoutLoader, type LayoutGlobs } from '@sylas/layout-core'
 
 // 重新导出常用 API，方便页面文件使用
 export { definePageMeta, generateFileRoutes, batchExtractRouteMeta }
@@ -100,17 +102,92 @@ class DefaultErrorBoundary extends Component<
 }
 
 /**
+ * 动态布局包装器 - 根据页面 meta 选择布局
+ * 优化：只在布局名称变化时重新创建布局组件，避免路由切换时的闪烁
+ */
+function DynamicLayoutWrapper({
+  children,
+  metaLoader,
+  layouts,
+  fallback,
+  routeKey,
+}: {
+  children: React.ReactNode
+  metaLoader?: () => Promise<{ layout?: string; [key: string]: unknown } | undefined>
+  layouts: ReturnType<typeof generateLayouts>
+  fallback: React.ReactNode
+  routeKey: string
+}) {
+  const location = useLocation()
+  const [layoutLoader, setLayoutLoader] = React.useState<(() => Promise<{ default: ComponentType<any> }>) | null>(null)
+  const [layoutName, setLayoutName] = React.useState<string>('default')
+  const prevLayoutNameRef = React.useRef<string>('')
+
+  React.useEffect(() => {
+    let canceled = false
+    const loadLayout = async () => {
+      try {
+        const meta = await metaLoader?.()
+        if (canceled) return
+        
+        const newLayoutName = meta?.layout || 'default'
+        // 只在布局名称变化时才更新布局加载器
+        if (newLayoutName !== prevLayoutNameRef.current) {
+          const loader = getLayoutLoader(layouts, newLayoutName)
+          setLayoutLoader(() => loader)
+          setLayoutName(newLayoutName)
+          prevLayoutNameRef.current = newLayoutName
+        }
+      } catch (error) {
+        console.error('[route-react] Failed to load page meta:', error)
+        // 使用默认布局
+        if (prevLayoutNameRef.current !== 'default') {
+          const defaultLoader = getLayoutLoader(layouts, 'default')
+          setLayoutLoader(() => defaultLoader)
+          setLayoutName('default')
+          prevLayoutNameRef.current = 'default'
+        }
+      }
+    }
+    
+    loadLayout()
+    
+    return () => {
+      canceled = true
+    }
+  }, [metaLoader, layouts, routeKey, location.pathname])
+
+  if (!layoutLoader) {
+    return <>{children}</>
+  }
+
+  // 使用布局名称作为 key，只在布局变化时重新创建布局组件
+  // 这样相同布局的路由切换时，布局组件保持稳定，只更新 children
+  return (
+    <LayoutWrapper 
+      key={layoutName} 
+      layoutLoader={layoutLoader} 
+      fallback={fallback}
+    >
+      {children}
+    </LayoutWrapper>
+  )
+}
+
+/**
  * 创建路由元素包装器
  */
 function createRouteElement(
   LazyComponent: React.LazyExoticComponent<ComponentType>,
-  metaLoader: (() => Promise<{ title?: string; [key: string]: unknown } | undefined>) | undefined,
+  metaLoader: (() => Promise<{ title?: string; layout?: string; [key: string]: unknown } | undefined>) | undefined,
   routeName: string,
   defaultTitle: string,
   suspenseFallback: React.ReactNode,
   ErrorBoundary: React.ComponentType<{ children: React.ReactNode }>,
+  layouts: ReturnType<typeof generateLayouts>,
+  routeKey: string,
 ) {
-  return (
+  const pageContent = (
     <ErrorBoundary>
       <RouteWrapper metaLoader={metaLoader} routeName={routeName} defaultTitle={defaultTitle}>
         <Suspense fallback={suspenseFallback}>
@@ -119,6 +196,22 @@ function createRouteElement(
       </RouteWrapper>
     </ErrorBoundary>
   )
+
+  // 如果有布局系统，使用动态布局包装器
+  if (layouts.length > 0) {
+    return (
+      <DynamicLayoutWrapper 
+        metaLoader={metaLoader} 
+        layouts={layouts} 
+        fallback={suspenseFallback}
+        routeKey={routeKey}
+      >
+        {pageContent}
+      </DynamicLayoutWrapper>
+    )
+  }
+
+  return pageContent
 }
 
 /**
@@ -135,6 +228,12 @@ export function createReactRouter(
   const defaultTitle = options?.defaultTitle ?? DEFAULT_TITLE
   const suspenseFallback = options?.suspenseFallback ?? <div>页面加载中...</div>
   const ErrorBoundary = options?.errorBoundary ?? DefaultErrorBoundary
+
+  // 处理布局模块
+  let layouts: ReturnType<typeof generateLayouts> = []
+  if (options?.layoutModules) {
+    layouts = generateLayouts(options.layoutModules)
+  }
 
   // 预先创建所有 lazy 组件
   const lazyComponents = new Map<string, React.LazyExoticComponent<ComponentType>>(
@@ -166,6 +265,8 @@ export function createReactRouter(
         defaultTitle,
         suspenseFallback,
         ErrorBoundary,
+        layouts,
+        file, // 传递文件路径作为 routeKey
       ),
     }
   })

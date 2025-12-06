@@ -411,12 +411,13 @@ export const compareRoute = (a: { path: string }, b: { path: string }): number =
 /**
  * 生成路由名称
  * 
- * 从路径中提取名称，去除参数和特殊字符，转换为 kebab-case
+ * 从路由路径中提取名称，去除参数和特殊字符，转换为 kebab-case 格式。
+ * 如果路由路径无法提取名称（如只有参数），则使用文件名作为后备。
  * 
- * @param file - 文件路径（作为后备，当路径无法提取名称时使用）
- * @param path - 路由路径
- * @param kebabKeepDigits - 是否在 kebab 转换时保留数字，默认 `false`
- * @returns 路由名称（kebab-case）
+ * @param filePath - 文件路径（作为后备，当路由路径无法提取名称时使用）
+ * @param routePath - 路由路径（如 `/user/:id`、`/user/profile`）
+ * @param keepDigits - 是否在 kebab 转换时保留数字，默认 `false`
+ * @returns 路由名称（kebab-case 格式）
  * 
  * @example
  * ```ts
@@ -425,14 +426,33 @@ export const compareRoute = (a: { path: string }, b: { path: string }): number =
  * 
  * buildRouteName('pages/user/profile.tsx', '/user/profile')
  * // => 'user-profile'
+ * 
+ * buildRouteName('pages/user/[id]/settings.tsx', '/user/:id/settings')
+ * // => 'user-settings'
+ * 
+ * buildRouteName('pages/[...slug].tsx', '/:slug/*')
+ * // => 'slug'（从文件名提取）
  * ```
  */
-export const buildRouteName = (file: string, path: string, kebabKeepDigits = false): string => {
-  // 从路径中提取名称：去除前导 /、参数标记（:、*）、多个斜杠
-  const nameFromPath = path.replace(/^\//, '').replace(/[:*]+/g, '').replace(/\/+/g, '-')
-  if (nameFromPath) return toKebab(nameFromPath, kebabKeepDigits)
-  // 后备：使用文件名（去除扩展名）
-  const fallback = file.split('/').pop() ?? file
-  return toKebab(fallback.replace(/\.[^.]+$/, ''), kebabKeepDigits)
+export const buildRouteName = (filePath: string, routePath: string, keepDigits = false): string => {
+  // 从路由路径提取名称：
+  // 1. 去除前导斜杠
+  // 2. 去除参数标记（:、*）和问号（可选参数）
+  // 3. 将多个斜杠替换为连字符
+  const cleanedPath = routePath
+    .replace(/^\//, '')           // 去除前导 /
+    .replace(/[:*?]+/g, '')        // 去除参数标记 :、*、?
+    .replace(/\/+/g, '-')          // 多个斜杠替换为连字符
+    .trim()
+  
+  // 如果清理后的路径有内容，转换为 kebab-case
+  if (cleanedPath) {
+    return toKebab(cleanedPath, keepDigits)
+  }
+  
+  // 后备方案：使用文件名（去除扩展名和目录路径）
+  const fileName = filePath.split('/').pop() ?? filePath
+  const nameWithoutExt = fileName.replace(/\.[^.]+$/, '')
+  return toKebab(nameWithoutExt, keepDigits)
 }
 

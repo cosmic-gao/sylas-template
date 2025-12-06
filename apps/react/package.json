@@ -11,6 +11,9 @@
   "dependencies": {
     "@sylas/route-react": "workspace:*",
     "@sylas/route-vite-compiler": "workspace:*",
+    "@sylas/layout-react": "workspace:*",
+    "@sylas/layout-vite-compiler": "workspace:*",
+    "@sylas/layout-core": "workspace:*",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "react-router-dom": "^7.10.1"

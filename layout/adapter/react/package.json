@@ -1,0 +1,44 @@
+{
+  "name": "@sylas/layout-react",
+  "version": "0.0.0",
+  "description": "React adapter for layout system",
+  "keywords": [
+    "layout",
+    "react",
+    "adapter"
+  ],
+  "author": "Sylas",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "index.tsx",
+  "module": "index.tsx",
+  "types": "index.tsx",
+  "exports": {
+    ".": {
+      "types": "./index.tsx",
+      "import": "./index.tsx",
+      "default": "./index.tsx"
+    }
+  },
+  "dependencies": {
+    "@sylas/layout-core": "workspace:*",
+    "react": "^19.2.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cosmic-gao/sylas-template.git",
+    "directory": "layout/adapter/react"
+  },
+  "bugs": {
+    "url": "https://github.com/cosmic-gao/sylas-template/issues"
+  },
+  "homepage": "https://github.com/cosmic-gao/sylas-template/tree/main/layout/adapter/react#readme"
+}
+

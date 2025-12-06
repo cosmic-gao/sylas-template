@@ -1,0 +1,32 @@
+{
+  "name": "@sylas/layout-vite-compiler",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "module": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    "./react": {
+      "types": "./react/index.ts",
+      "import": "./react/index.ts",
+      "default": "./react/index.ts"
+    },
+    ".": {
+      "types": "./index.ts",
+      "import": "./index.ts",
+      "default": "./index.ts"
+    }
+  },
+  "dependencies": {
+    "@sylas/layout-core": "workspace:*",
+    "@sylas/layout-react": "workspace:*",
+    "@sylas/route-shared": "workspace:*",
+    "@sylas/route-core": "workspace:*",
+    "vite": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0"
+  }
+}
+

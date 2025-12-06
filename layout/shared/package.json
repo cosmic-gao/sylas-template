@@ -1,0 +1,40 @@
+{
+  "name": "@sylas/layout-shared",
+  "version": "0.0.0",
+  "description": "Shared utilities for layout system",
+  "keywords": [
+    "layout",
+    "shared",
+    "utilities"
+  ],
+  "author": "Sylas",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "module": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    ".": {
+      "types": "./index.ts",
+      "import": "./index.ts",
+      "default": "./index.ts"
+    }
+  },
+  "files": [
+    "index.ts"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cosmic-gao/sylas-template.git",
+    "directory": "layout/shared"
+  },
+  "bugs": {
+    "url": "https://github.com/cosmic-gao/sylas-template/issues"
+  },
+  "homepage": "https://github.com/cosmic-gao/sylas-template/tree/main/layout/shared#readme"
+}
+

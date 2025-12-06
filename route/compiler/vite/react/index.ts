@@ -52,14 +52,18 @@ ${absolutePatterns
 }
 
 // 创建路由配置
-export function createRouter() {
+export function createRouter(options = {}) {
   const pageModules = getPageModules()
   const routeBuildOptions = ${routeBuildOptionsStr}
   const routerOptions = ${routerOptionsStr}
-  return createReactRouter(pageModules, {
+  const result = createReactRouter(pageModules, {
     ...routeBuildOptions,
     ...routerOptions,
+    ...options, // 允许传入额外的选项（如 layoutModules）
   })
+  // 调试：输出生成的路由
+  console.log('[route-vite-react-compiler] Generated routes:', result.routes.map(r => ({ path: r.path, file: r.file, name: r.name })))
+  return result
 }
 `
     } catch (error) {
@@ -96,12 +100,41 @@ export function createRouter() {
     },
     handleHotUpdate({ file, server }) {
       // 文件变化时重新生成路由
+      // 将文件路径统一转换为正斜杠格式，便于匹配
+      const normalizedFile = file.replace(/\\/g, '/')
+      
+      // 使用 pagePatterns 检查文件是否匹配页面文件模式
       const isPageFile = pagePatterns.some((pattern) => {
-        const regex = new RegExp(pattern.replace(/\*\*/g, '.*').replace(/\*/g, '[^/]*'))
-        return regex.test(file)
+        // 将 glob 模式转换为正则表达式
+        // 处理相对路径模式（如 ./pages/**/*.{tsx,jsx}）
+        let testPattern = pattern
+        
+        // 移除前导的 ./
+        if (testPattern.startsWith('./')) {
+          testPattern = testPattern.slice(2)
+        }
+        
+        // 将 glob 模式转换为正则表达式
+        // ** 匹配任意路径（包括斜杠）
+        // * 匹配文件名（不含斜杠）
+        // {tsx,jsx} 扩展名模式
+        let regexStr = testPattern
+          .replace(/\*\*/g, '.*')                    // ** -> .*
+          .replace(/\*/g, '[^/]*')                    // * -> [^/]*
+          .replace(/\{([^}]+)\}/g, (_, exts) => {     // {tsx,jsx} -> (tsx|jsx)
+            return `(${exts.split(',').join('|')})`
+          })
+          .replace(/\./g, '\\.')                      // 转义点号
+        
+        // 确保匹配文件路径的末尾
+        regexStr = '.*' + regexStr + '$'
+        
+        const regex = new RegExp(regexStr, 'i') // 不区分大小写
+        return regex.test(normalizedFile)
       })
 
       if (isPageFile) {
+        console.log('[route-vite-react-compiler] Page file changed, regenerating routes:', file)
         generateRoutes()
         // 通知客户端更新虚拟模块
         const module = server.moduleGraph.getModuleById(RESOLVED_ROUTE_MODULE_ID)
@@ -109,7 +142,11 @@ export function createRouter() {
           server.moduleGraph.invalidateModule(module)
           return [module]
         }
+      } else {
+        // 调试：输出不匹配的文件
+        console.log('[route-vite-react-compiler] File does not match page patterns:', file, 'Patterns:', pagePatterns)
       }
+      return undefined
     },
   }
 }
