@@ -7,9 +7,9 @@
   "module": "index.ts",
   "types": "index.ts",
   "exports": {
-    "./react": "./react/index.ts",
-    "./vue": "./vue/index.ts",
-    ".": "./index.ts"
+    "./react": "./react/index",
+    "./vue": "./vue/index",
+    ".": "./index"
   },
   "dependencies": {
     "@sylas/route-core": "workspace:*",

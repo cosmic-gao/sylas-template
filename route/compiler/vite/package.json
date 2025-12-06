@@ -7,15 +7,28 @@
   "module": "index.ts",
   "types": "index.ts",
   "exports": {
-    "./react": "./react/index.ts",
-    "./vue": "./vue/index.ts",
-    ".": "./index.ts"
+    "./react": {
+      "types": "./react/index.ts",
+      "import": "./react/index.ts",
+      "default": "./react/index.ts"
+    },
+    "./vue": {
+      "types": "./vue/index.ts",
+      "import": "./vue/index.ts",
+      "default": "./vue/index.ts"
+    },
+    ".": {
+      "types": "./index.ts",
+      "import": "./index.ts",
+      "default": "./index.ts"
+    }
   },
   "dependencies": {
     "@sylas/route-core": "workspace:*",
     "@sylas/route-react": "workspace:*",
     "@sylas/route-vue": "workspace:*",
-    "vite": "^5.0.0"
+    "@sylas/route-shared": "workspace:*",
+    "vite": "^7.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0"

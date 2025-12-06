@@ -1,22 +1,10 @@
-import { FileRouter } from '@sylas/route-react'
-import type { ComponentType } from 'react'
-
-const pageModules = {
-  ...import.meta.glob<{ default: ComponentType }>('./pages/**/*.{tsx,jsx}'),
-  ...import.meta.glob<{ default: ComponentType }>('./app-pages/**/*.{tsx,jsx}'),
-}
+// 方式1：使用编译器自动生成的路由（推荐）
+import { createRouter } from 'virtual:@sylas/route-routes'
+import { RouterProvider } from 'react-router-dom'
 
 function App() {
-  return (
-    <FileRouter
-      modules={pageModules}
-      options={{
-        pageRoots: ['pages', 'app-pages'],
-        defaultTitle: 'Sylas Template',
-      }}
-    />
-  )
+  const { router } = createRouter()
+  return <RouterProvider router={router} />
 }
 
 export default App
-

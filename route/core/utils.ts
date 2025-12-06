@@ -1,3 +1,5 @@
+import { toKebab } from '../shared/index.js'
+
 export type PageMeta = Record<string, unknown>
 
 export interface SegmentContext {
@@ -34,9 +36,11 @@ const PARAM_DETAIL_REGEX =
  */
 const ROUTE_GROUP_REGEX = /^\(.+\)$/
 
-const ROUTE_PRIORITY_STATIC = 0
-const ROUTE_PRIORITY_DYNAMIC = 1
-const ROUTE_PRIORITY_CATCH_ALL = 2
+const ROUTE_PRIORITY = {
+  STATIC: 0,
+  DYNAMIC: 1,
+  CATCH_ALL: 2,
+} as const
 
 export const createDefaultSegmentContext = (): SegmentContext => ({
   index: 0,
@@ -46,28 +50,7 @@ export const createDefaultSegmentContext = (): SegmentContext => ({
   fullPath: '',
 })
 
-/**
- * 将字符串转换为 kebab-case 格式
- * 处理步骤：
- * 1. 驼峰转连字符：camelCase -> camel-case
- * 2. 下划线和空格转连字符
- * 3. 移除不允许的字符（根据 keepDigits 决定是否保留数字）
- * 4. 合并多个连字符
- * 5. 去除首尾连字符并转小写
- * @param value - 待转换的字符串
- * @param keepDigits - 是否保留数字，默认 false
- * @returns kebab-case 格式的字符串
- */
-export const toKebab = (value: string, keepDigits = false): string => {
-  const disallowed = keepDigits ? /[^a-zA-Z0-9-]+/g : /[^a-zA-Z-]+/g
-  return value
-    .replace(/([a-z])([A-Z])/g, '$1-$2')
-    .replace(/[_\s]+/g, '-')
-    .replace(disallowed, '')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-    .toLowerCase()
-}
+// toKebab 已移至 shared，从 shared 导入
 
 /**
  * 预编译 pageRoots 正则表达式数组
@@ -324,9 +307,9 @@ export const normalizePath = (
  */
 export const classifyRoute = (path: string): number => {
   const segments = path.split('/').filter(Boolean)
-  if (segments.some((s) => s.endsWith('*'))) return ROUTE_PRIORITY_CATCH_ALL
-  if (segments.some((s) => s.startsWith(':'))) return ROUTE_PRIORITY_DYNAMIC
-  return ROUTE_PRIORITY_STATIC
+  if (segments.some((s) => s.endsWith('*'))) return ROUTE_PRIORITY.CATCH_ALL
+  if (segments.some((s) => s.startsWith(':'))) return ROUTE_PRIORITY.DYNAMIC
+  return ROUTE_PRIORITY.STATIC
 }
 
 /**

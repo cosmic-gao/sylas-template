@@ -1,4 +1,4 @@
-// Vite 编译器适配器 - 导出多个框架支持
-export * from './react/index.js'
-export * from './vue/index.js'
+// Vite 编译器适配器 - 导出所有框架支持
+export * from './react'
+export * from './vue'
 

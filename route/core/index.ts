@@ -53,7 +53,6 @@ export const definePageMeta = <T extends PageMeta>(meta: T): T => meta
 // 重新导出工具函数
 export type { SegmentContext } from './utils.js'
 export {
-  toKebab,
   createRootMatchers,
   parseParamSegment,
   mapStaticSegment,
@@ -67,6 +66,9 @@ export {
   compareRoute,
   buildRouteName,
 } from './utils.js'
+
+// 从 shared 重新导出通用工具
+export { toKebab } from '../shared/index.js'
 
 const DEFAULT_PAGE_ROOTS = ['pages']
 
