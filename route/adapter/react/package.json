@@ -1,0 +1,20 @@
+{
+  "name": "@sylas/route-react",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.tsx",
+  "module": "index.tsx",
+  "types": "index.tsx",
+  "dependencies": {
+    "@sylas/route-core": "workspace:*",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "react-router-dom": "^7.10.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3"
+  }
+}
+

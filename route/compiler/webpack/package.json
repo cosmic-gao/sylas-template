@@ -1,0 +1,25 @@
+{
+  "name": "@sylas/route-webpack-compiler",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "module": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    "./react": "./react/index.ts",
+    "./vue": "./vue/index.ts",
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "@sylas/route-core": "workspace:*",
+    "@sylas/route-react": "workspace:*",
+    "@sylas/route-vue": "workspace:*",
+    "webpack": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/webpack": "^5.0.0"
+  }
+}
+

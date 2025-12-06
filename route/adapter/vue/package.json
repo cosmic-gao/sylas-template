@@ -1,0 +1,17 @@
+{
+  "name": "@sylas/route-vue",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "module": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "@sylas/route-core": "workspace:*",
+    "vue": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0"
+  }
+}
+

@@ -1,0 +1,18 @@
+{
+  "name": "sylas-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "pnpm monorepo template with React",
+  "scripts": {
+    "dev": "pnpm --filter react dev",
+    "build": "pnpm --filter react build",
+    "preview": "pnpm --filter react preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
