@@ -54,8 +54,17 @@ export const createDefaultSegmentContext = (): SegmentContext => ({
 
 /**
  * 预编译 pageRoots 正则表达式数组
- * @param pageRoots - pages 目录别名数组
+ * 
+ * 用于匹配和去除文件路径中的 pages 目录前缀
+ * 
+ * @param pageRoots - pages 目录别名数组（如 `['pages', 'app-pages']`）
  * @returns 编译后的正则表达式数组，用于匹配路径前缀
+ * 
+ * @example
+ * ```ts
+ * const matchers = createRootMatchers(['pages', 'app-pages'])
+ * // => [RegExp, RegExp]
+ * ```
  */
 export const createRootMatchers = (pageRoots: string[]): RegExp[] =>
   pageRoots.map((root) => new RegExp(`^[./\\\\]*${root}[\\\\/]`, 'i'))
@@ -73,11 +82,21 @@ interface ParsedParamSegment {
 const paramSegmentCache = new Map<string, ParsedParamSegment | null>()
 
 /**
- * 解析参数段（如 [id]、[id?]、[...slug]）
- * 使用缓存机制避免重复解析
+ * 解析参数段（如 `[id]`、`[id?]`、`[...slug]`）
+ * 
+ * 使用缓存机制避免重复解析相同的参数段，提升性能
+ * 
  * @param segment - 路径段字符串
- * @param enableCatchAll - 是否支持 catch-all 路由
- * @returns 解析后的参数信息，如果不是参数段则返回 null
+ * @param enableCatchAll - 是否支持 catch-all 路由，默认 `true`
+ * @returns 解析后的参数信息，如果不是参数段则返回 `null`
+ * 
+ * @example
+ * ```ts
+ * parseParamSegment('[id]')        // => { name: 'id', optional: false, catchAll: false }
+ * parseParamSegment('[id?]')       // => { name: 'id', optional: true, catchAll: false }
+ * parseParamSegment('[...slug]')   // => { name: 'slug', optional: false, catchAll: true }
+ * parseParamSegment('user')        // => null
+ * ```
  */
 export const parseParamSegment = (segment: string, enableCatchAll = true): ParsedParamSegment | null => {
   // 检查缓存
@@ -116,10 +135,20 @@ export const parseParamSegment = (segment: string, enableCatchAll = true): Parse
 
 /**
  * 映射静态段（非参数段）为路径部分
- * @param segment - 路径段字符串
+ * 
+ * 将文件路径段转换为 URL 路径段，支持 kebab-case 转换和大小写控制
+ * 
+ * @param segment - 路径段字符串（如 `UserProfile`、`user-profile`）
  * @param kebabKeepDigits - 是否在 kebab 转换时保留数字
  * @param caseSensitive - 是否大小写敏感
  * @returns 转换后的路径部分
+ * 
+ * @example
+ * ```ts
+ * mapStaticSegment('UserProfile', false, false)  // => 'user-profile'
+ * mapStaticSegment('UserProfile', false, true)   // => 'User-Profile'
+ * mapStaticSegment('user_profile', false, false)  // => 'user-profile'
+ * ```
  */
 export const mapStaticSegment = (segment: string, kebabKeepDigits: boolean, caseSensitive: boolean): string => {
   if (caseSensitive) {
@@ -137,8 +166,23 @@ export const mapStaticSegment = (segment: string, kebabKeepDigits: boolean, case
 
 /**
  * 映射参数段为路径部分
+ * 
+ * 将解析后的参数段信息转换为路由路径格式
+ * 
  * @param parsed - 解析后的参数段信息
- * @returns 路径参数格式（如 :id、:id?、:slug/*）
+ * @returns 路径参数格式
+ * 
+ * @example
+ * ```ts
+ * mapParamSegment({ name: 'id', optional: false, catchAll: false })
+ * // => ':id'
+ * 
+ * mapParamSegment({ name: 'id', optional: true, catchAll: false })
+ * // => ':id?'
+ * 
+ * mapParamSegment({ name: 'slug', optional: false, catchAll: true })
+ * // => ':slug/*'
+ * ```
  */
 export const mapParamSegment = (parsed: ParsedParamSegment): string => {
   if (parsed.catchAll) return `:${parsed.name}/*`
@@ -148,10 +192,13 @@ export const mapParamSegment = (parsed: ParsedParamSegment): string => {
 
 /**
  * 映射自定义段（通过自定义 mapper）
+ * 
+ * 使用用户提供的自定义映射函数处理路径段
+ * 
  * @param segment - 路径段字符串
  * @param mapper - 自定义映射函数
  * @param ctx - 段上下文信息
- * @returns 自定义映射结果，如果没有映射则返回 null
+ * @returns 自定义映射结果，如果没有映射则返回 `null`
  */
 export const mapCustomSegment = (
   segment: string,
@@ -165,7 +212,9 @@ export const mapCustomSegment = (
 
 /**
  * 将 segment 映射为 path 部分
+ * 
  * 按优先级处理：自定义映射 > 参数段 > 静态段
+ * 
  * @param segment - 路径段字符串
  * @param mapper - 自定义段映射函数
  * @param ctx - 段上下文信息
@@ -200,11 +249,22 @@ export const mapSegmentToPathPart = (
 
 /**
  * 一次性处理路径：去除 pages 前缀、文件扩展名、分割段、过滤路由组、去除尾部 index
- * 使用单个正则表达式减少多次字符串和数组操作
- * @param raw - 原始文件路径
+ * 
+ * 使用单个正则表达式减少多次字符串和数组操作，提升性能
+ * 
+ * @param raw - 原始文件路径（如 `pages/user/profile.tsx`）
  * @param rootMatchers - 预编译的根路径匹配器数组
  * @param removeIndex - 是否去除尾部 index
  * @returns 处理后的路径段数组（已去除尾部 index）
+ * 
+ * @example
+ * ```ts
+ * processPathSegments('pages/user/profile.tsx', matchers, true)
+ * // => ['user', 'profile']
+ * 
+ * processPathSegments('pages/user/index.tsx', matchers, true)
+ * // => ['user']
+ * ```
  */
 export const processPathSegments = (raw: string, rootMatchers: RegExp[], removeIndex: boolean): string[] => {
   // 统一路径分隔符并去除文件扩展名
@@ -235,7 +295,9 @@ export const processPathSegments = (raw: string, rootMatchers: RegExp[], removeI
 
 /**
  * 构建规范化路径段数组
+ * 
  * 为每个段创建上下文信息并映射为路径部分
+ * 
  * @param segments - 原始路径段数组
  * @param mapper - 自定义段映射函数
  * @param kebabKeepDigits - 是否在 kebab 转换时保留数字
@@ -272,14 +334,26 @@ export const buildNormalizedSegments = (
 
 /**
  * 规范化文件路径为路由路径
- * @param raw - 原始文件路径
+ * 
+ * 这是路径处理的核心函数，将文件系统路径转换为路由路径
+ * 
+ * @param raw - 原始文件路径（如 `pages/user/[id].tsx`）
  * @param rootMatchers - 预编译的根路径匹配器数组
  * @param mapper - 自定义段映射函数
- * @param kebabKeepDigits - 是否在 kebab 转换时保留数字
- * @param caseSensitive - 是否大小写敏感
- * @param enableCatchAll - 是否支持 catch-all 路由
- * @param removeIndex - 是否去除尾部 index
- * @returns 规范化后的路由路径
+ * @param kebabKeepDigits - 是否在 kebab 转换时保留数字，默认 `false`
+ * @param caseSensitive - 是否大小写敏感，默认 `false`
+ * @param enableCatchAll - 是否支持 catch-all 路由，默认 `true`
+ * @param removeIndex - 是否去除尾部 index，默认 `true`
+ * @returns 规范化后的路由路径（如 `/user/:id`）
+ * 
+ * @example
+ * ```ts
+ * normalizePath('pages/user/[id].tsx', matchers)
+ * // => '/user/:id'
+ * 
+ * normalizePath('pages/user/[...slug].tsx', matchers)
+ * // => '/user/:slug/*'
+ * ```
  */
 export const normalizePath = (
   raw: string,
@@ -301,9 +375,18 @@ export const normalizePath = (
 
 /**
  * 路由分类：静态 < 动态 < catch-all
+ * 
  * 用于路由排序，确保更具体的路由优先匹配
+ * 
  * @param path - 路由路径
- * @returns 路由优先级：0=静态, 1=动态, 2=catch-all
+ * @returns 路由优先级：`0`=静态, `1`=动态, `2`=catch-all
+ * 
+ * @example
+ * ```ts
+ * classifyRoute('/user/profile')    // => 0 (静态)
+ * classifyRoute('/user/:id')       // => 1 (动态)
+ * classifyRoute('/user/:slug/*')   // => 2 (catch-all)
+ * ```
  */
 export const classifyRoute = (path: string): number => {
   const segments = path.split('/').filter(Boolean)
@@ -314,9 +397,12 @@ export const classifyRoute = (path: string): number => {
 
 /**
  * 比较两个路由的优先级和长度
+ * 
+ * 用于路由排序，优先级高的路由排在前面，相同优先级时路径短的排在前面
+ * 
  * @param a - 第一个路由
  * @param b - 第二个路由
- * @returns 比较结果：负数表示 a < b，正数表示 a > b
+ * @returns 比较结果：负数表示 `a < b`，正数表示 `a > b`，`0` 表示相等
  */
 export const compareRoute = (a: { path: string }, b: { path: string }): number => {
   const delta = classifyRoute(a.path) - classifyRoute(b.path)
@@ -326,11 +412,22 @@ export const compareRoute = (a: { path: string }, b: { path: string }): number =
 
 /**
  * 生成路由名称
+ * 
  * 从路径中提取名称，去除参数和特殊字符，转换为 kebab-case
- * @param file - 文件路径（作为后备）
+ * 
+ * @param file - 文件路径（作为后备，当路径无法提取名称时使用）
  * @param path - 路由路径
- * @param kebabKeepDigits - 是否在 kebab 转换时保留数字
+ * @param kebabKeepDigits - 是否在 kebab 转换时保留数字，默认 `false`
  * @returns 路由名称（kebab-case）
+ * 
+ * @example
+ * ```ts
+ * buildRouteName('pages/user/[id].tsx', '/user/:id')
+ * // => 'user'
+ * 
+ * buildRouteName('pages/user/profile.tsx', '/user/profile')
+ * // => 'user-profile'
+ * ```
  */
 export const buildRouteName = (file: string, path: string, kebabKeepDigits = false): string => {
   // 从路径中提取名称：去除前导 /、参数标记（:、*）、多个斜杠

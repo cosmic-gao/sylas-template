@@ -22,13 +22,13 @@
  * 
  * @example
  * ```ts
- * toKebab('camelCase')           // 'camel-case'
- * toKebab('snake_case')          // 'snake-case'
- * toKebab('PascalCase')           // 'pascal-case'
- * toKebab('Mixed_Case Name')     // 'mixed-case-name'
- * toKebab('User123', false)      // 'user'
- * toKebab('User123', true)       // 'user123'
- * toKebab('  multiple---spaces ') // 'multiple-spaces'
+ * toKebab('camelCase')              // => 'camel-case'
+ * toKebab('snake_case')              // => 'snake-case'
+ * toKebab('PascalCase')              // => 'pascal-case'
+ * toKebab('Mixed_Case Name')         // => 'mixed-case-name'
+ * toKebab('User123', false)          // => 'user'
+ * toKebab('User123', true)           // => 'user123'
+ * toKebab('  multiple---spaces ')   // => 'multiple-spaces'
  * ```
  */
 export const toKebab = (value: string, keepDigits: boolean = false): string => {
@@ -67,10 +67,10 @@ export const toKebab = (value: string, keepDigits: boolean = false): string => {
  * 
  * @example
  * ```ts
- * toAbsolutePath('./pages/**')      // '/pages/**'
- * toAbsolutePath('../pages/**')     // '/pages/**'
- * toAbsolutePath('../../pages/**')  // '/pages/**'
- * toAbsolutePath('/pages/**')       // '/pages/**'（已为绝对路径，直接返回）
+ * toAbsolutePath('./pages/**')       // => '/pages/**'
+ * toAbsolutePath('../pages/**')      // => '/pages/**'
+ * toAbsolutePath('../../pages/**')   // => '/pages/**'
+ * toAbsolutePath('/pages/**')        // => '/pages/**'（已为绝对路径，直接返回）
  * ```
  */
 export const toAbsolutePath = (path: string): string => {

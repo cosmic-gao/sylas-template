@@ -23,27 +23,40 @@ export type ModuleGlobs = Record<string, ModuleLoader>
 
 export interface RouteBuildOptions {
   /**
-   * pages 目录别名（多根目录支持），默认 ['pages']
+   * pages 目录别名（多根目录支持）
+   * @default ['pages']
    */
   pageRoots?: string[]
   /**
-   * 片段映射自定义规则，返回 null/undefined 时使用默认逻辑
+   * 片段映射自定义规则
+   * 
+   * 返回 `null` 或 `undefined` 时使用默认逻辑
+   * 
+   * @param segment - 路径段字符串
+   * @param ctx - 段上下文信息
+   * @returns 自定义映射结果，或 `null`/`undefined` 使用默认逻辑
    */
   segmentMapper?: (segment: string, ctx: SegmentContext) => string | null | undefined
   /**
-   * toKebab 是否保留数字，默认 false
+   * toKebab 是否保留数字
+   * @default false
    */
   kebabKeepDigits?: boolean
   /**
-   * 是否去除尾部 index 文件，默认 true
+   * 是否去除尾部 index 文件
+   * @default true
    */
   removeIndex?: boolean
   /**
-   * 是否大小写敏感，默认 false（路径转换为小写）
+   * 是否大小写敏感
+   * 
+   * `false` 时路径会转换为小写
+   * @default false
    */
   caseSensitive?: boolean
   /**
-   * 是否支持 catch-all 路由（[...slug]），默认 true
+   * 是否支持 catch-all 路由（`[...slug]`）
+   * @default true
    */
   enableCatchAll?: boolean
 }
@@ -74,11 +87,13 @@ const DEFAULT_PAGE_ROOTS = ['pages']
 
 /**
  * 从模块加载器中提取页面元数据
+ * 
  * 支持两种导出方式：
- * 1. definePageMeta() 函数调用
- * 2. pageMeta 对象导出
+ * - `definePageMeta()` 函数调用
+ * - `pageMeta` 对象导出
+ * 
  * @param loader - 模块加载器函数
- * @returns 页面元数据，如果不存在或提取失败则返回 undefined
+ * @returns 页面元数据，如果不存在或提取失败则返回 `undefined`
  */
 const extractPageMeta = async (loader: ModuleLoader): Promise<PageMeta | undefined> => {
   try {
@@ -106,9 +121,13 @@ const extractPageMeta = async (loader: ModuleLoader): Promise<PageMeta | undefin
 
 /**
  * 批量提取所有路由的 meta 信息
- * 支持并行提取以提高性能
+ * 
+ * 支持并行提取以提高性能，可配置并发数控制资源使用
+ * 
  * @param routes - 路由元数据数组
  * @param options - 提取选项
+ *   - `parallel?: boolean` - 是否并行提取，默认 `true`
+ *   - `concurrency?: number` - 并行提取时的并发数，默认 `10`
  * @returns Promise，解析为包含 meta 的路由数组
  */
 export const batchExtractRouteMeta = async (
@@ -170,11 +189,14 @@ export const batchExtractRouteMeta = async (
 }
 
 /**
- * 主函数：从文件模块生成路由配置
- * metaLoader 采用延迟执行策略，支持后续的 worker 并行化处理
+ * 从文件模块生成路由配置
+ * 
+ * 这是文件路由系统的核心函数，将文件系统结构转换为路由配置。
+ * `metaLoader` 采用延迟执行策略，支持后续的 worker 并行化处理。
+ * 
  * @param modules - 文件模块映射（文件路径 -> 模块加载器）
- * @param options - 路由构建选项
- * @returns 排序后的路由元数据数组
+ * @param options - 路由构建选项，参见 `RouteBuildOptions`
+ * @returns 排序后的路由元数据数组（按优先级和路径长度排序）
  */
 export const generateFileRoutes = (
   modules: ModuleGlobs,
