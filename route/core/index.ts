@@ -4,8 +4,7 @@ import {
   normalizePath,
   compareRoute,
   buildRouteName,
-  classifyRoute,
-} from './utils.js'
+} from './utils'
 
 export type PageMeta = Record<string, unknown>
 
@@ -64,7 +63,7 @@ export interface RouteBuildOptions {
 export const definePageMeta = <T extends PageMeta>(meta: T): T => meta
 
 // 重新导出工具函数
-export type { SegmentContext } from './utils.js'
+export type { SegmentContext } from './utils'
 export {
   createRootMatchers,
   parseParamSegment,
@@ -78,10 +77,9 @@ export {
   classifyRoute,
   compareRoute,
   buildRouteName,
-} from './utils.js'
+} from './utils'
 
-// 从 shared 重新导出通用工具
-export { toKebab } from '../shared/index.js'
+export { toKebab } from '../shared'
 
 const DEFAULT_PAGE_ROOTS = ['pages']
 

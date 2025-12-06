@@ -1,4 +1,4 @@
-import { toKebab } from '../shared/index.js'
+import { toKebab } from '../shared/index'
 
 export type PageMeta = Record<string, unknown>
 
@@ -49,8 +49,6 @@ export const createDefaultSegmentContext = (): SegmentContext => ({
   isLast: false,
   fullPath: '',
 })
-
-// toKebab 已移至 shared，从 shared 导入
 
 /**
  * 预编译 pageRoots 正则表达式数组
