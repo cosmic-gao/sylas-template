@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { definePageMeta } from '@sylas/route-react'
+import { definePageMeta } from 'sylas/route-react'
 
 // 使用默认布局（可以不指定，默认就是 default）
 definePageMeta({
@@ -66,7 +66,7 @@ function IndexPage() {
         <h2>💡 布局使用说明</h2>
         <p>在页面文件中使用 <code>definePageMeta</code> 来指定布局：</p>
         <pre style={{ background: '#1a1a1a', color: '#fff', padding: '1rem', borderRadius: '4px', overflow: 'auto' }}>
-{`import { definePageMeta } from '@sylas/route-react'
+{`import { definePageMeta } from 'sylas/route-react'
 
 definePageMeta({
   layout: 'admin',  // 指定布局名称

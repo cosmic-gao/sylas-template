@@ -1,4 +1,4 @@
-import { definePageMeta } from '@sylas/route-react'
+import { definePageMeta } from 'sylas/route-react'
 import { Link } from 'react-router-dom'
 
 // 指定使用 auth 布局

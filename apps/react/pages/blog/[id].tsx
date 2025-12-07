@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { definePageMeta } from '@sylas/route-react'
+import { definePageMeta } from 'sylas/route-react'
 
 export const pageMeta = definePageMeta({
   name: 'blog-id',

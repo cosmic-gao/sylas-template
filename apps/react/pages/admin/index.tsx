@@ -1,4 +1,4 @@
-import { definePageMeta } from '@sylas/route-react'
+import { definePageMeta } from 'sylas/route-react'
 
 // 指定使用 admin 布局
 definePageMeta({

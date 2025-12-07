@@ -1,0 +1,21 @@
+{
+  "name": "@sylas/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/cli.js",
+  "bin": {
+    "sylas": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@sylas/generator": "workspace:*",
+    "vite": "^7.2.6"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

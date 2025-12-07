@@ -1,5 +1,4 @@
-// 使用 layout 编译器自动生成的 App 组件
-// 这个文件会被 layout 编译器的虚拟模块替换
-import App from 'virtual:@sylas/layout-app'
+// 使用 sylas-cli 生成的虚拟 App 组件（由 .sylas/app-app.tsx 提供）
+import App from '#app'
 
 export default App

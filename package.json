@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "pnpm --filter react dev",
     "build": "pnpm --filter react build",
-    "preview": "pnpm --filter react preview"
+    "preview": "pnpm --filter react preview",
+    "dev:cli": "cd apps/react && node ../../packages/cli/dist/cli.js dev",
+    "build:cli": "cd apps/react && node ../../packages/cli/dist/cli.js build",
+    "preview:cli": "cd apps/react && node ../../packages/cli/dist/cli.js preview",
+    "postinstall": "cd apps/react && node ../../packages/cli/dist/cli.js prepare"
   },
   "devDependencies": {
     "typescript": "^5.9.3"
